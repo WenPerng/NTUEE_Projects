@@ -1,0 +1,105 @@
+% Last updated 2025 May
+\usepackage{amsmath,amssymb,mathrsfs,bbm,color,cancel}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{epstopdf,epsfig}
+\usepackage{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{backgrounds}
+\usetikzlibrary{arrows,shapes}
+\usetikzlibrary{tikzmark}
+\usetikzlibrary{calc}
+\usepackage{tikz-cd}
+\usepackage{hyperref}
+\hypersetup{colorlinks,breaklinks,
+            linkcolor=[RGB]{48,112,179},
+            citecolor=[RGB]{34,139,34},
+            % urlcolor=[RGB]{0,0,128}
+}
+
+%-----tables-----
+\usepackage{diagbox} %diagonal slash in table
+\usepackage{multirow}
+\usepackage{arydshln} % arraydashline
+\usepackage{multicol,tabularx}
+\renewcommand{\arraystretch}{1.5}
+%-----algorithm-----
+\usepackage[ruled,linesnumbered]{algorithm2e}
+
+%-----citation------
+\usepackage[backend=biber,sorting=none,style=alphabetic,maxalphanames=99,maxnames=99]{biblatex}
+\DeclareLabelalphaTemplate{
+  \labelelement{
+    \field[strwidth=1]{labelname}
+  }
+  \labelelement{
+    \field[strwidth=2,strside=right]{year}
+  }
+}
+\addbibresource{refs.bib}
+
+
+%------------------------------------------%
+% My commands
+\newcommand{\diff}[2]{\frac{\mathrm{d}{#1}}{\mathrm{d}{#2}}}
+\newcommand{\pdiff}[2]{\frac{\partial{#1}}{\partial{#2}}}
+\newcommand{\QED}{\;\;\;\;\;\blacksquare}
+\newcommand{\QEDline}{$\hfill\blacksquare$}
+\newcommand{\transpose}{\mathsf{T}}
+\newcommand{\ee}{\mathrm{e}}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\ii}{\mathrm{i}}
+\newcommand{\trace}[1]{\mathrm{Tr}\left\{{#1}\right\}}
+\newcommand{\setdef}[2]{\left\{\,{#1}\,\middle\vert\,{#2}\,\right\}}
+\newcommand{\abs}[1]{\left|{#1}\right|}
+\renewcommand{\vec}[1]{\boldsymbol{#1}} %bold font physics vector
+\newcommand{\norm}[1]{\left\lVert{#1}\right\rVert}
+\newcommand{\ceil}[1]{\left\lceil{#1}\right\rceil}
+\newcommand{\floor}[1]{\left\lfloor{#1}\right\rfloor}
+%------------------------------------------%
+\DeclareMathOperator{\defeq}{\vcentcolon=}
+\DeclareMathOperator{\eqdef}{=\vcentcolon}
+\DeclareMathOperator{\polylog}{\mathrm{polylog}}
+%------------------------------------------%
+
+%%%%% Anotated Equations in LaTeX using Tikz %%%%%%
+
+\newcommand{\highlight}[2]{\colorbox{#1!17}{#2}}
+
+%------------------------------------------%
+\renewenvironment{definition}[1][]{
+    \begin{exampleblock}{Def. (#1)}
+}{
+    \end{exampleblock}
+}
+\renewenvironment{theorem}[1][]{
+    \begin{block}{Thm. (#1)}
+}{
+    \end{block}
+}
+\newenvironment{remark}[1][]{
+    \begin{alertblock}{Rmk. (#1)}
+}{
+    \end{alertblock}
+}
+\renewenvironment{lemma}[1][]{
+    \begin{alertblock}{Lem. (#1)}
+}{
+    \end{alertblock}
+}
+\renewenvironment{proof}{
+    \textit{Proof}. 
+}
+{
+    \QEDline
+}
+
+% -----nonlinear Fourier transform------------
+% small overbrace
+\makeatletter
+\def\smalloverbrace#1{\mathop{\vbox{\m@th\ialign{##\crcr\noalign{\kern3\p@}
+  \tiny\downbracefill\crcr\noalign{\kern3\p@\nointerlineskip}
+  $\hfil\displaystyle{#1}\hfil$\crcr}}}\limits}
+\makeatother
+
+\newcommand{\NLFT}[1]{{\smalloverbrace{#1}}}
