@@ -1,0 +1,139 @@
+\section{Review: NTK}
+
+\begin{frame}{Two-Layer Network}
+    \textbf{Model:} with $[W_1]_{ij}\sim\mathcal{N}(0,1)$ and $[W_2]_{ij}\sim\mathcal{N}(0,\sigma_{W_2}^2)$,
+    \begin{equation}
+        f_{\vec{\theta}} (\vec{x}) \tikzmarknode{Eq}{=} \frac{W_2}{\sqrt{n_1}} \cdot \sigma\left(\frac{W_1}{\sqrt{n_0}} \vec{x}\right).
+    \end{equation}
+    \begin{tikzpicture}[overlay,remember picture,>=stealth,nodes={align=left,inner ysep=1pt},<-]
+        % equal sign
+        \path (Eq.south) ++ (-2em,-3.5em) node[anchor=south,color=themecolor!67] (center){$=$};
+        % f_theta
+        \draw[draw=themecolor!67,fill=themecolor!33] (center.west) ++ (-.5em,0.5em) rectangle ++(-1em,-1em);
+        \path (center.west) ++ (-2em,-0.5em) node[anchor=south,color=themecolor!67] {$1$};
+        \path (center.west) ++ (-1em,-1.5em) node[anchor=south,color=themecolor!67] {$1$};
+        % W2
+        \path (center.east) ++ (0.5em,-0.5em) node[anchor=south,color=themecolor!67] (W2){$1$};
+        \draw[draw=themecolor!67,fill=themecolor!33] (W2.east) ++ (0em,0.5em) rectangle ++(3em,-1em);
+        \path (W2.south) ++ (+2em,-1em) node[anchor=south,color=themecolor!67] {$n_1$};
+        % sigma (left)
+        \path (W2.east) ++ (3em,0em) node[anchor=west,color=themecolor!67] (sigma) {$\cdot\sigma\Bigg($};
+        % W1
+        \path (sigma.east) ++ (1em,0em) node[anchor=east,color=themecolor!67] (W1) {$n_1$};
+        \draw[draw=themecolor!67,fill=themecolor!33] (W1.east)++(0em,-1.5em) rectangle ++(2em,3em);
+        \path (W1.east) ++ (2em,-2.2em) node[anchor=east,color=themecolor!67] {$n_0$};
+        % x
+        \draw[draw=themecolor!67,fill=themecolor!33] (W1.east)++(2.3em,-1em) rectangle ++(1em,2em);
+        \path (W1.east) ++ (2.2em,-1.5em) node[anchor=west,color=themecolor!67] {$1$};
+        \path (W1.east) ++ (3.2em,0em) node[anchor=west,color=themecolor!67] {$n_0$};
+        % sigma (right)
+        \path (W1.east) ++ (4em,0em) node[anchor=west,color=themecolor!67] {$\Bigg)$};
+    \end{tikzpicture}
+
+    \vspace{1.2cm}
+
+    \textbf{Trainable parameters:}
+    \begin{equation*}
+        \vec{\theta} = [\mathrm{vec}(W_1); \mathrm{vec}(W_2)] \in \mathbb{R}^{(n_0n_1 + n_1) \times 1}.
+    \end{equation*}
+    
+    \textbf{Training data:} $\mathcal{D} = \left\{(\vec{x}_i,y_i)\right\}_{i=1}^{p}$, with
+    \begin{equation*}
+        X = \left[\begin{matrix}
+            \vec{x}_1 & \ldots & \vec{x}_p
+        \end{matrix}\right] \in \mathbb{R}^{n_0 \times p},\, Y = \left[\begin{matrix}
+            y_1 & \ldots & y_p
+        \end{matrix}\right] \in \mathbb{R}^{1\times p}.
+    \end{equation*}
+\end{frame}
+
+\begin{frame}{Neural Tangent Kernel}
+    NTK describes the learning dynamics under gradient flow:
+    \begin{equation}
+        \diff{f_{\vec{\theta}_t}(\vec{x})}{t} \tikzmarknode{Eq}{=} - \left(f_{\vec{\theta}_t}(X) - Y\right) \Theta_t(X,\vec{x}),
+    \end{equation}
+    \begin{tikzpicture}[overlay,remember picture,>=stealth,nodes={align=left,inner ysep=1pt},<-]
+        % equal sign
+        \path (Eq.south) ++ (0,-4em) node[anchor=south,color=themecolor!67] (center){$=$};
+        % 1st
+        \draw[draw=themecolor!67,fill=themecolor!33] (center.west)++(-1em,0.5em) rectangle ++(-1em,-1em);
+        \path (center.west) ++ (-2.5em,-0.5em) node[anchor=south,color=themecolor!67] {$1$};
+        \path (center.west) ++ (-1.5em,-1.5em) node[anchor=south,color=themecolor!67] {$1$};
+        % 2nd
+        \path (center.east) ++ (1.2em,-0.5em) node[anchor=south,color=themecolor!67] {$1$};
+        \draw[draw=themecolor!67,fill=themecolor!33] (center.east)++(2em,0.5em) rectangle ++(5em,-1em);
+        \path (center.east) ++ (+4.5em,-1.5em) node[anchor=south,color=themecolor!67] {$p$};
+        % 3rd
+        \draw[draw=themecolor!67,fill=themecolor!33] (center.east)++(7.5em,-2.5em) rectangle ++(1em,5em);
+        \path (center.east) ++ (+9.5em,0em) node[anchor=east,color=themecolor!67] {$p$};
+        \path (center.east) ++ (+8em,-3.5em) node[anchor=south,color=themecolor!67] {$1$};
+    \end{tikzpicture}
+
+    \vspace{1.5cm}
+    where
+    \begin{align}
+        \Theta_{t}(\vec{x}_i,\vec{x}_j) &= \nabla_{\vec{\theta}}^\transpose f_{\vec{\theta}_t}(\vec{x}_i) \overbrace{\nabla_{\vec{\theta}} f_{\vec{\theta}_t}(\vec{x}_j)}^{(n_0 n_1 + n_1) \times 1} \\
+        &= \nabla_{W_1}^\transpose f_{\vec{\theta}_t}(\vec{x}_i) \underbrace{\nabla_{W_1} f_{\vec{\theta}_t}(\vec{x}_j)}_{n_0 n_1 \times 1} + \nabla_{W_2}^\transpose f_{\vec{\theta}_t}(\vec{x}_i) \underbrace{\nabla_{W_2} f_{\vec{\theta}_t}(\vec{x}_j)}_{n_1 \times 1}. \notag
+    \end{align}
+\end{frame}
+
+\begin{frame}{Lazy Learning}
+    As network width goes to infinity: $n_0\rightarrow\infty$ and $n_1/n_0 = \gamma$ fixed, the neural tangent kernel $\Theta_t$ becomes \hl{frozen}:
+    \begin{equation*}
+        \Theta_t \rightarrow \Theta_0\; \forall t \ge 0.
+    \end{equation*}
+    The final form is a ridgeless kernel regression: denote $f_{\vec{\theta}_t}$ by $f_{t}$,
+    \begin{equation}
+        f_{\infty}(\vec{x}) = f_{0}(\vec{x}) + \tikzmarknode{coeff}{\eqhl{teal}{\left(Y - f_{0}(X)\right) \Theta_{0}^{-1}(X,X)}} \, \tikzmarknode{feature}{\eqhl{red}{\Theta_0(X,\vec{x})}}.
+    \end{equation}
+    \begin{tikzpicture}[overlay,remember picture,>=stealth,nodes={align=left,inner ysep=1pt},<-]
+        % coeff
+        \path (coeff.south) ++ (0,-0.5em) node[anchor=north east,color=teal!67] (wordC){regression\\coefficients};
+        \draw [color=teal!57](coeff.south) |- ([xshift=-0.3ex,color=teal]wordC.south west);
+        % coeff
+        \path (feature.south) ++ (0,-0.5em) node[anchor=north west,color=red!67] (wordRF){random\\features};
+        \draw [color=red!57](feature.south) |- ([xshift=-0.3ex,color=red]wordRF.south east);
+    \end{tikzpicture}
+
+    \vspace{0.5cm}
+    As no features are learned, the regression uses the random kernel as random features. This is termed \hl{lazy learning}.
+\end{frame}
+
+\begin{frame}{Kernel Regression (1)}
+    In the wide network limit, the training result is equivalent to a ridgeless ($\lambda \rightarrow 0$) kernel regression with NTK $\Theta_0$, with solution of the form\footnote{For simplicity, assume centering $f_0(X) = 0$.}
+    \begin{equation*}
+        f_{\infty}(\vec{x}) = \vec{v}^\transpose \Theta_0(X,\vec{x}).
+    \end{equation*}
+    
+    By \hl{Mercer's theorem}, the following decomposition exists:
+    \begin{align}
+        & \Theta_0(\vec{x},\vec{x}') = \sum_{\rho} \psi_\rho(\vec{x}) \psi_\rho(\vec{x}'), \\
+        & \int \eqhl{red}{p(\vec{x})} \Theta_0(\vec{x},\vec{x}') \psi_\rho(\vec{x})\,\dd\vec{x} = \eta_\rho \psi_\rho(\vec{x}'), \\
+        & \int \eqhl{red}{p(\vec{x})} \psi_\rho(\vec{x}) \psi_{\rho'}(\vec{x}) \,\dd\vec{x} = \eta_\rho\delta_{\rho\rho'}.
+    \end{align}
+    The integrations are over $\vec{x} \in \mathbb{R}^n$.
+\end{frame}
+
+\begin{frame}{Kernel Regression (2)}
+    By \hl{Moore--Aronszajn theorem}, the NTK forms an RKHS:
+    \begin{align}
+        \mathcal{H} = \left\{\sum_{\rho} w_\rho \psi_\rho(\cdot)\right\} = \left\{\vec{w}^\transpose \vec{\psi}(\cdot) \right\}
+    \end{align}
+    with
+    \begin{equation}
+        \Lambda \defeq \mathbb{E}_{\vec{x}} \left[\vec{\psi}(\vec{x}) \vec{\psi}^\transpose(\vec{x})\right] = \mathrm{diag}(\eta_1, \eta_2, \ldots).
+    \end{equation}
+    The teacher (target) and the student (learned) functions both lies in $\mathcal{H}: $\footnote{If $f_\star \notin \mathcal{H}$, it is equivalent to having noise in the sampling of $f_\star$.}
+    \begin{align*}
+        &f_\star(\cdot) = \vec{w}_\star^\transpose \vec{\psi}(\cdot), && f_{\tikzmarknode{theta}{\eqhl{red}{\vec{\theta}}}}(\cdot) = \tikzmarknode{w}{\eqhl{red}{\vec{w}}}^\transpose \vec{\psi}(\cdot).
+    \end{align*}
+    \begin{tikzpicture}[overlay,remember picture,>=stealth,nodes={align=left,inner ysep=1pt},<-]
+        % For "L"
+        \path (theta.south) ++ (2em,-2em) node[anchor=south,color=red!67] {depends on training};
+        \draw[<->,color=red!57] (theta.south) -- ++(0,-0.3)  -| node[] {} (w.south);
+    \end{tikzpicture}
+\end{frame}
+
+% \begin{frame}{Kernel Regression (3)}
+%     [figure of RKHS and NTK span]
+% \end{frame}

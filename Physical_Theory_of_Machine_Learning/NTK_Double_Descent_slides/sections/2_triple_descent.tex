@@ -1,0 +1,97 @@
+\section{Multiple Descents}
+\begin{frame}{Generalization Error}
+    Let $\vec{x}$ follow the same data distribution as the training dataset $\mathcal{D}$,
+    \begin{align*}
+        \mathcal{E}_{g} &= \mathbb{E}_{\vec{x}} \left[\norm{f_\star(\vec{x}) - f_\infty(\vec{x})}^2\right] \\
+        &= \mathbb{E}_{\vec{x}} \left[\left(f_\star(\vec{x}) - f_0(\vec{x})\right)^2\right] \\
+        &\hspace{0.5cm} - 2 \mathbb{E}_{\vec{x}} \left[\left(f_\star(\vec{x}) - f_0(\vec{x})\right) \left(Y - f_0(X)\right) \Theta_0^{-1}(X,X) \Theta(X,\vec{x})\right] \\
+        &\hspace{0.5cm} + \mathbb{E}_{\vec{x}} \left[\left(\left(Y - f_0(X)\right) \Theta_0^{-1}(X,X) \Theta_0(X,\vec{x})\right)^2\right] \\
+        &= a + \trace{B \eqhl{red}{\Theta_0^{-1}(X,X)}} \\
+        &\hspace{0.5cm} + \sum c_i \trace{C_i \eqhl{red}{\Theta_0^{-1}(X,X)} D_i \eqhl{red}{\Theta_0^{-1}(X,X)}}
+    \end{align*}
+    The generalization depends on the \hl{spectrum} of the \hl{empirical} NTK.
+\end{frame}
+
+\begin{frame}{Spectrum of NTK (by Rank)}
+    \begin{flushright}
+    \fbox{
+        \footnotesize
+        $f_{\vec{\theta}} (\vec{x}) \tikzmarknode{Eq}{=} \frac{W_2}{\sqrt{n_1}} \cdot \sigma\left(\frac{W_1}{\sqrt{n_0}} \vec{x}\right) \quad (1)$
+    }
+    \end{flushright}
+
+    \vspace{-.7cm}
+    
+    For the two-layer network:
+    \begin{equation*}
+        \nabla_{W_1} f_{\vec{\theta}}(\vec{x}) \in \mathbb{R}^{n_0n_1\times1} ,\, \nabla_{W_2} f_{\vec{\theta}}(\vec{x}) \in \mathbb{R}^{n_1\times1}.
+    \end{equation*}
+    Thus, the empirical NTK is
+    \vspace{0.7cm}
+    \begin{align*}
+        \Theta_0(X,X) &\tikzmarknode{Eq}{=} \\
+        \\ \\ \\
+        &\hspace{4cm} \tikzmarknode{plus}{+} \hspace{5.3cm}.
+    \end{align*}
+    \begin{tikzpicture}[overlay,remember picture,>=stealth,nodes={align=left,inner ysep=1pt},<-]
+    % d_W1'
+        \draw[draw=black,fill=black!15] (Eq.east) ++ (1em,-3.5em) rectangle ++ (4.3em,7em) node[anchor=west,color=black,yshift=-3.4em,xshift=-4.5em] (W1t) {\footnotesize$\nabla_{W_1}^\transpose f_{\vec{\theta}}(\vec{x}_i)$};
+        \path (W1t) ++ (0em,1em) node[anchor=south,color=black] {$\vdots$};
+        \path (W1t) ++ (0em,-2em) node[anchor=south,color=black] {$\vdots$};
+        \path (W1t.west) ++ (-0.4em,-0.5em) node[anchor=south,color=themecolor!67] {$p$};
+        \path (W1t.south) ++ (0em,-4em) node[anchor=south,color=themecolor!67] {$n_0n_1$};
+    % d_W1
+        \draw[draw=black,fill=black!15] (W1t.east) ++ (0em,-2.15em) rectangle ++ (7em,4.3em) node[anchor=west,color=black,yshift=-2.3em,xshift=-7em] (W1) {\footnotesize$\cdots\nabla_{W_1} f_{\vec{\theta}}(\vec{x}_j)\cdots$};
+        \path (W1.east) ++ (1em,-0.5em) node[anchor=south,color=themecolor!67] {$n_0n_1$};
+        \path (W1.south) ++ (0em,-2.5em) node[anchor=south,color=themecolor!67] {$p$};
+    % plus sign
+        % \path (W1.east) ++ (2.5em,-0.5em) node[anchor=south,color=black] (plus) {$+$};
+    % d_W2'
+        \draw[draw=black,fill=black!15] (plus.east) ++ (1em,-3.5em) rectangle ++ (4.3em,7em) node[anchor=west,color=black,yshift=-3.4em,xshift=-4.5em] (W2t) {\footnotesize$\nabla_{W_2}^\transpose f_{\vec{\theta}}(\vec{x}_i)$};
+        \path (W2t) ++ (0em,1em) node[anchor=south,color=black] {$\vdots$};
+        \path (W2t) ++ (0em,-2em) node[anchor=south,color=black] {$\vdots$};
+        \path (W2t.west) ++ (-0.4em,-0.5em) node[anchor=south,color=themecolor!67] {$p$};
+        \path (W2t.south) ++ (0em,-4em) node[anchor=south,color=themecolor!67] {$n_1$};
+    % d_W2
+        \draw[draw=black,fill=black!15] (W2t.east) ++ (0em,-2.15em) rectangle ++ (7em,4.3em) node[anchor=west,color=black,yshift=-2.3em,xshift=-7em] (W2) {\footnotesize$\cdots\nabla_{W_2} f_{\vec{\theta}}(\vec{x}_j)\cdots$};
+        \path (W2.east) ++ (0.5em,-0.5em) node[anchor=south,color=themecolor!67] {$n_1$};
+        \path (W2.south) ++ (0em,-2.5em) node[anchor=south,color=themecolor!67] {$p$};
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Random Matrix Theory}
+    The empirical NTK contains terms of the form
+    \begin{equation*}
+        \frac{1}{n} F^\transpose F,
+    \end{equation*}
+    where $F$ is of size $n_0n_1 \times p$ or $n_1 \times p$ with \hl{stochastic} entries. The limiting spectrum is of \hl{Marchenko–Pastur}-like form\footnote{The figure above is only an illustration if there is no nonlinearity.}.
+    \begin{figure}
+        \centering
+        \subfloat[$n/p=0.67$]{
+            \includegraphics[width=0.3\linewidth, trim = 15mm 50mm 20mm 60mm, clip]{figures/MPDistr_0.3.pdf}
+        }
+        \subfloat[$n/p=1.00$]{
+            \includegraphics[width=0.3\linewidth, trim = 12mm 50mm 20mm 60mm, clip]{figures/MPDistr_1.pdf}
+        }
+        \subfloat[$n/p=3.33$]{
+            \includegraphics[width=0.3\linewidth, trim = 15mm 50mm 20mm 60mm, clip]{figures/MPDistr_3.33.pdf}
+        }
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Result -- Triple Descent}
+    The rank of NTK undergoes \hl{transition} at $n_0n_1 = p$ and $n_1 = p$.
+
+    The figure below shows an illustration of $n_0 = n_1 \rightarrow \infty$.
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.9\linewidth]{figures/triple_descent.png}
+        \begin{tikzpicture}[overlay,remember picture,>=stealth,nodes={align=left,inner ysep=1pt},<-]
+            \draw[draw=white,fill=white] (-7,0.3) rectangle (-6,0.6) node[pos=0.4] {\tiny$n_0n_1=p$};
+            \draw[draw=white,fill=white] (-4.5,0.3) rectangle (-3.5,0.6) node[pos=0.4] {\tiny$n_0n_1=p^2$};
+        \end{tikzpicture}
+        \credit{Adlam et al. '20}
+    \end{figure}
+
+    A quantitative analysis requires knowledge in \hl{nonlinear random matrix theory} \cite{triple_descent,random_matrices}.
+\end{frame}

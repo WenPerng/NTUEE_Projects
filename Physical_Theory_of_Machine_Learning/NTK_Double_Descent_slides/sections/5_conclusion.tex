@@ -1,0 +1,29 @@
+\section{Conclusions}
+
+\begin{frame}{Conclusions}
+    The double descent phenomena have been seen not only in regression or toy model, but also in real dataset classification (e.g., MNIST).
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=1\linewidth]{figures/doubleDescent_MNIST.png}
+        \credit{Belkin et al. '19}
+    \end{figure}
+
+    It is known that for neural networks (MLP) with large width, its behavior is similar to ridgeless kernel regression. This talk then linked it with the double descent in kernel regression.
+\end{frame}
+
+\begin{frame}{Conclusions}
+    
+    
+
+    
+
+    The blowup is caused by variance of small-eigenvalue features from the empirical NTK.
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.7\linewidth]{figures/doubleDescent2.pdf}
+    \end{figure}
+
+    Using the replica trick, we saw the non-monotonic behaviors come from the variance.
+\end{frame}

@@ -1,0 +1,19 @@
+\section{Random Matrix Theory}
+
+\begin{frame}{Nonlinear Random Matrices}
+    Recall the NTK, it contains terms such as
+    \begin{equation*}
+        F = \sigma\left(\frac{W_1}{\sqrt{n_0}} \vec{x}\right) \text{ and } F' = \sigma'\left(\frac{W_1}{\sqrt{n_0}} \vec{x}\right).
+    \end{equation*}
+\end{frame}
+
+\begin{frame}{Random Matrix Theory}
+    With $y = f_\star(\vec{x}) + \varepsilon$, $\varepsilon\sim\mathcal{N}(0,\sigma^2)$,
+    \begin{align*}
+        \mathcal{E}_{\text{test}} &= \lim_{\lambda \rightarrow 0^+} \left(\mathrm{Bias}(\lambda) + \mathrm{Var}(\lambda)\right) \\
+        &= \lim_{\lambda \rightarrow 0^+} \lim_{n_0 \rightarrow \infty} \left(\cdots + \frac{\sigma^2}{n_0} \trace{K(K+n_0\lambda I)^{-2}} \right) \\
+        &= \lim_{\lambda \rightarrow 0^+} \lim_{n_0 \rightarrow \infty} \left(\frac{1}{n_0} \sum_{i} \left(\frac{n_0 \lambda \tilde{f}_{\star,i}}{t_i + n_0 \lambda}\right)^2 + \frac{\sigma^2}{n_0} \sum_{i} \left(\frac{t_i}{t_i + n_0 \lambda}\right)^2 \right) \\
+        &= \lim_{\lambda \rightarrow 0^+} \left(\int_{\mathbb{R}} \frac{\lambda^2}{(t + \lambda)^2} \dd\rho(t) + \sigma^2\int_{\mathbb{R}} \frac{t}{(t + \lambda)^2} \dd\rho(t)\right),
+    \end{align*}
+    where $\rho(t)$ is the \hl{distribution of the spectrum of NTK} in the limit.
+\end{frame}

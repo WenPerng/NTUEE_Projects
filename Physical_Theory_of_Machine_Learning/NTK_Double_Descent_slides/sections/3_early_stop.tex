@@ -1,0 +1,29 @@
+\section{Early Stopping}
+
+\begin{frame}{Spectral Decomposition of NTK}
+    The NTK training dynamics resulting from the gradient flow is:
+    \begin{align}
+        f_t(\vec{x}) &= f_0(\vec{x}) + \left(Y - f_0(\vec{x})\right)^\transpose \Theta_0^{-1} \left(\id - \eqhl{red}{\ee^{-\Theta_0t}}\right) \Theta_0(X,\vec{x}).
+    \end{align}
+    The speed of convergence is determined by the spectral decomposition of $\Theta_0 \defeq \Theta_0(X,X)$. In fact, if we have
+    \vspace{0.5cm}
+    \begin{equation}
+        \Theta_0 = U\Lambda U^\transpose \tikzmarknode{Eq}{=} \hspace{5.1cm},
+    \end{equation}
+    \begin{tikzpicture}[overlay,remember picture,>=stealth,nodes={align=left,inner ysep=1pt},<-]
+    % U
+        \draw[draw=black,fill=black!15] (Eq.east) ++ (0.5em,-2em) rectangle ++ (4em,4em) node[anchor=west,color=black,yshift=-2em,xshift=-3.7em] {\footnotesize$\vec{t}_1 \cdots \vec{t}_p$};
+    % Lambda
+        \draw[draw=black] (Eq.east) ++ (4.8em,-2em) rectangle ++ (4em,4em) node[anchor=west,color=black,yshift=-1.8em,xshift=-2.8em] (Diag) {\footnotesize$\ddots$};
+        \path (Diag) ++ (-1em,.5em) node[anchor=south,color=black] {\footnotesize$\lambda_1$};
+        \path (Diag) ++ (1.2em,-1.7em) node[anchor=south,color=black] {\footnotesize$\lambda_p$};
+    % U'
+        \draw[draw=black,fill=black!15] (Eq.east) ++ (9.1em,-2em) rectangle ++ (4em,4em) node[anchor=west,color=black,yshift=-2em,xshift=-2.8em] {\footnotesize$\vec{t}_1^\transpose$ \\ \footnotesize$\vdots$ \\ \footnotesize$\vec{t}_p^\transpose$};
+    \end{tikzpicture}
+    
+    where $\lambda_1 \ge \cdots \ge \lambda_p$, then $\vec{t}_1$ is the first feature to be learned, while $\vec{t}_p$ is the last.
+\end{frame}
+
+\begin{frame}{Generalization Error}
+    
+\end{frame}

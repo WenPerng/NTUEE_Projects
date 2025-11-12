@@ -1,0 +1,322 @@
+\section{Generalization Error}
+
+
+
+\begin{frame}{Kernel Ridge Regression (1)}
+    Since NTK training is similar to \hl{kernel ridge regression}, let us study the generalization behavior of the latter first!
+    \hrule
+    
+    There is label noise: $y_{i} = f_{\star}(\vec{x}_i) + \varepsilon_i$ and $\varepsilon_i \sim \mathcal{N}(0,\sigma^2)$.
+    The dataset is identified as $\mathcal{D} = \left\{(\vec{x}_i, \varepsilon_i)\right\}_{i=1}^{p}$.
+    
+    With these, the training loss function for kernel ridge regression is
+    \begin{align*}
+        \mathcal{E}_\lambda(\vec{w}) &= \sum_{i \in \mathcal{D}} \left(y_i - f_{\vec{\theta}}(\vec{x}_i)\right)^2 + \lambda \norm{f_{\vec{\theta}}}^2_{\mathcal{H}} \\
+        &= \sum_{i\in\mathcal{D}} \left((\vec{w}_\star - \vec{w})^\transpose \vec{\psi}(\vec{x}_i) + \varepsilon_i\right)^2 + \lambda \norm{\vec{w}}^2 \\
+        &= \sum_{i\in\mathcal{D}} \left(\overline{\vec{w}}^\transpose \vec{\psi}(\vec{x}_i) + \varepsilon_i\right)^2 + \lambda \norm{\vec{w}_\star - \overline{\vec{w}}}^2,
+        % &= \norm{\tikzmarknode{psi}{\Psi}^\transpose(X) \overline{\vec{w}} + \vec{\varepsilon}}^2 + \lambda \norm{\vec{w}}^2,
+    \end{align*}
+    % \begin{tikzpicture}[overlay,remember picture,>=stealth,nodes={align=left,inner ysep=1pt},<-]
+    %     % equal
+    %     \path (psi.south) ++ (2em,-0.8em) node[anchor=south,color=themecolor!67,rotate=90] {$=$};
+    %     % center
+    %     \path (psi.south) ++ (-0.3em,-3.5em) node[anchor=south,color=themecolor!67] (center){};
+    %     % Psi
+    %     \draw[draw=themecolor!67,fill=themecolor!33] (center) ++ (0em,-2em) rectangle ++ (2.4em,4em);
+    %     \path (center) ++ (1.2em,1em) node[anchor=south,color=themecolor!67] {\tiny$\vec{\psi}^\transpose(\vec{x}_1)$};
+    %     \path (center) ++ (1.2em,-0.5em) node[anchor=south,color=themecolor!67] {\tiny$\vdots$};
+    %     \path (center) ++ (1.2em,-2em) node[anchor=south,color=themecolor!67] {\tiny$\vec{\psi}^\transpose(\vec{x}_p)$};
+    %     % \bar{w}
+    %     \draw[draw=themecolor!67,fill=themecolor!33] (center) ++ (2.6em,-1.2em) rectangle ++ (1em,2.4em);
+    %     \path (center) ++ (3.1em,-0.2em) node[anchor=south,color=themecolor!67] {\tiny$\overline{\vec{w}}$};
+    %     % +
+    %     \path (center) ++ (4em,-0.2em) node[anchor=south,color=themecolor!67] {\tiny$+$};
+    %     % noise
+    %     \draw[draw=themecolor!67,fill=themecolor!33] (center) ++ (4.5em,-2em) rectangle ++ (1em,4em);
+    %     \path (center) ++ (5em,1em) node[anchor=south,color=themecolor!67] {\tiny$\varepsilon_1$};
+    %     \path (center) ++ (5em,-0.5em) node[anchor=south,color=themecolor!67] {\tiny$\vdots$};
+    %     \path (center) ++ (5em,-2em) node[anchor=south,color=themecolor!67] {\tiny$\varepsilon_p$};
+    % \end{tikzpicture}
+    
+    % \vspace{1cm}
+    
+    where $\overline{\vec{w}} = \vec{w}_\star - \vec{w}$. Denote $\overline{\vec{w}}^* \defeq \arg\min \mathcal{E}_\lambda(\overline{\vec{w}})$.
+\end{frame}
+
+\begin{frame}{Kernel Ridge Regression (2)}
+    Similarly, the generalization error will be:
+    \begin{align*}
+        \mathcal{E}_{g}(\overline{\vec{w}}^*) &= \mathbb{E}_{\vec{x}} \left[\left(f_{\star}(\vec{x}) - f_{\vec{\theta}}(\vec{x})\right)^2\right] \\
+        &= (\vec{w}_\star - \vec{w}^*)^\transpose \mathbb{E}_{\vec{x}}\left[\vec{\psi}(\vec{x}) \vec{\psi}^\transpose(\vec{x})\right] (\vec{w}_\star - \vec{w}^*) \\
+        &= {\overline{\vec{w}}^*}^\transpose \Lambda \overline{\vec{w}}^*.
+    \end{align*}
+    The typical generalization error will be
+    \begin{align*}
+        \mathcal{E}_{g} &= \mathbb{E}_\mathcal{D}\left[\mathcal{E}_{g}(\overline{\vec{w}}^*)\right] \\
+        &= \mathbb{E}_\mathcal{D}\left[ \int \eqhl{teal}{\mathcal{E}_{g}(\overline{\vec{w}})}\, \eqhl{red}{\delta(\overline{\vec{w}} - \overline{\vec{w}}^*)}\, \dd\overline{\vec{w}}\right].
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Quenched Averaging (1)}
+    \begin{equation*}
+    \boxed{
+        \mathcal{E}_{g} = \mathbb{E}_\mathcal{D}\left[\int \eqhl{teal}{\mathcal{E}_{g}(\overline{\vec{w}})}\, \eqhl{red}{\delta(\overline{\vec{w}} - \overline{\vec{w}}^*)} \,\dd\overline{\vec{w}}\right]
+    }
+    \end{equation*}
+
+    Consider
+    \begin{equation*}
+        Z = \int \dd \overline{\vec{w}} \,\exp\left\{\beta\left(\tikzmarknode{train}{\eqhl{red}{-\mathcal{E}_{\lambda}(\overline{\vec{w}})}}\right)\right\},
+    \end{equation*}
+    then
+    \begin{equation*}
+        \delta(\overline{\vec{w}} - \overline{\vec{w}}^*) = \lim_{\beta \rightarrow \infty} \frac{1}{Z} \ee^{-\beta \mathcal{E}_\lambda(\overline{\vec{w}})}.
+    \end{equation*}
+
+    How do we incorporate the $\mathcal{E}_g$ term? By including a \hl{source term}.
+\end{frame}
+
+\begin{frame}{Quenched Averaging (2)}
+    By utilizing the partition function \cite{Canatar_2021}:
+    \begin{equation}
+        Z = \int \dd \overline{\vec{w}} \,\exp\left\{\beta\left(\tikzmarknode{train}{\eqhl{red}{-\mathcal{E}_{\lambda}(\overline{\vec{w}})}} + \tikzmarknode{test}{\eqhl{teal}{t \cdot \mathcal{E}_{g}(\overline{\vec{w}})}}\right)\right\},
+    \end{equation}
+    the test error under kernel ridge regression is
+    \begin{equation}
+        \mathcal{E}_{g}(\tikzmarknode{optimal}{\eqhl{red}{\overline{\vec{w}}^*}}) = \lim_{\beta \rightarrow \infty} \frac{1}{\beta} \left.\pdiff{}{t} \log Z\right|_{t = 0}.
+    \end{equation}
+    \begin{tikzpicture}[overlay,remember picture,>=stealth,nodes={align=left,inner ysep=1pt},<-]
+        % optimal
+        \path (optimal.south) ++ (0,-0.5em) node[anchor=north east,color=red!67] (word){$
+        \overline{\vec{w}}^* = \arg\min \mathcal{E}_\lambda(\overline{\vec{w}})
+        $};
+        \draw [color=red!57](optimal.south) |- ([xshift=-0.3ex,color=red]word.south west);
+    \end{tikzpicture}
+
+    \vspace{0.3cm}
+    
+    Then, the generalization error is
+    \begin{equation}
+        \mathcal{E}_g = \mathbb{E}_\mathcal{D}\left[\mathcal{E}_{g}(\overline{\vec{w}}^*)\right] = \lim_{\beta \rightarrow \infty} \frac{1}{\beta} \left.\pdiff{}{t} \mathbb{E}_\mathcal{D}\left[\log Z\right]\right|_{t = 0}.
+    \end{equation}
+    Thus, it requires the \hl{replica trick}\footnote{I apologize for using a different notation as in the paper.}!
+\end{frame}
+
+\begin{frame}{Replica Trick (0)}
+    Recap: what is the \hl{replica trick}?
+    \begin{equation*}
+        \mathbb{E}_\mathcal{D}[\log Z] = \mathbb{E}_\mathcal{D}\left[ \lim_{x \rightarrow \infty}\frac{Z^x - 1}{x}\right] = \lim_{x\rightarrow 0} \frac{\mathbb{E}_\mathcal{D}[Z^x] - 1}{x}.
+    \end{equation*}
+    Steps:
+    \begin{enumerate}
+        \item For integer $n$, compute $Z^n$ with replicated state parameter $\vec{w}^a$ and identical disorder parameter $\mathcal{D}$.
+        \item Apply $\mathbb{E}_\mathcal{D}[\cdot]$.
+        \item Along the way, apply
+        \begin{itemize}
+            \item Hubbard--Stratonovich transformation, and
+            \item Fourier transform relation of delta distribution.
+        \end{itemize}
+        \item Compute saddle point equation.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Replica Trick (1)}
+    \begin{align*}
+        \mathbb{E}_\mathcal{D}[Z^n] &= \int \underbrace{\left(\prod_{a = 1}^{n} \dd \overline{\vec{w}}^{a}\right)}_{\mathscr{D} [\overline{\vec{w}}]} \cdot \ee^{\beta t \sum_{a=1}^{n} \mathcal{E}_g(\overline{\vec{w}}^a)} \cdot \tikzmarknode{logdet}{\eqhl{teal}{\mathbb{E}_{\mathcal{D}}\left[ \ee^{-\beta \sum_{a=1}^{n} \mathcal{E}_{\lambda}(\overline{\vec{w}}^a)} \right]}},
+    \end{align*}
+    where
+    \begin{align*}
+        \eqhl{teal}{\color{teal!17}E} &= \mathbb{E}_\mathcal{D} \left[\exp\left(-\beta \sum_{a = 1}^{n} \sum_{i \in \mathcal{D}} \left({\overline{\vec{w}}^a}^\transpose \vec{\psi}(\vec{x}_i) + \varepsilon_i\right)^2\right)\right] \cdot \ee^{-\beta\lambda\sum_{a=1}^{n} \norm{\vec{w}^a}^2} \\
+        &= \left(\mathbb{E}_{(\vec{x},\varepsilon)} \left[\exp\left(-\beta \sum_{a = 1}^{n} \left(\tikzmarknode{q}{\eqhl{red}{{\overline{\vec{w}}^a}^\transpose \vec{\psi}(\vec{x}) + \varepsilon}}\right)^2\right)\right]\right)^p  \cdot \ee^{-\beta\lambda\sum_{a=1}^{n} \norm{\vec{w}^a}^2} \\
+        \\ \\ \\
+        &= \left(\det(\id + 2\beta C)\right)^{p/2}  \cdot \ee^{-\beta\lambda\sum_{a=1}^{n} \norm{\vec{w}_\star - \overline{\vec{w}}^a}^2}.
+    \end{align*}
+    \begin{tikzpicture}[overlay,remember picture,>=stealth,nodes={align=left,inner ysep=1pt},<-]
+        \path (q.south) ++ (2.5em,-0.2em) node[anchor=north east,color=red!67] {$\defeq q^a\sim\mathcal{N}$};
+        \path (q.south) ++ (5em,-1.5em) node[anchor=north east,color=red!67] {$
+            \rightsquigarrow \begin{dcases}
+                \mathbb{E}_{(\vec{x},\varepsilon)} [q^{a}] = {\overline{\vec{w}}^a}^\transpose \mathbb{E}_{(\vec{x},\varepsilon)} \left[\vec{\psi}(\vec{x})\right] \stackrel{!}{=} 0, \\
+                \mathbb{E}_{(\vec{x},\varepsilon)} [q^{a} q^{b}] = {\overline{\vec{w}}^a}^\transpose \Lambda \overline{\vec{w}}^b +\sigma^2 \eqdef C^{ab}.
+            \end{dcases}
+        $};
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Replica Trick (2)}
+    \begin{align*}
+        \mathbb{E}_\mathcal{D}[Z^n] &= \int \mathscr{D}[\overline{\vec{w}}] \cdot \ee^{-\beta \sum_{a=1}^{n} \left(\lambda \norm{\vec{w}_\star - \overline{\vec{w}}^a}^2 - t \mathcal{E}_g(\overline{\vec{w}}^a)\right)} \eqhl{teal}{\ee^{-\frac{p}{2} \log \det(\id + 2\beta C)}},
+    \end{align*}
+    where
+    \begin{align*}
+        \eqhl{teal}{\color{teal!17}E} &= \int \mathscr{D}[C] \,\ee^{-\frac{p}{2} \log \det(\id + 2\beta C)} \prod_{a \ge a'} \tikzmarknode{delta}{\eqhl{red}{\delta\left(C^{ab} - {\overline{\vec{w}}^a}^\transpose \Lambda \overline{\vec{w}}^b - \sigma^2\right)}} \\
+        \\
+        \\
+        &= \int \frac{\mathscr{D}[C] \,\mathscr{D}[\widehat{C}]}{(2\pi)^{\frac{n(n+1)}{2}}} \,\ee^{-\frac{p}{2} \log \det(\id + 2\beta C) + \ii \sum_{a \ge b} \widehat{C}^{ab} (C^{ab} - {\overline{\vec{w}}^a}^\transpose \Lambda \overline{\vec{w}^b} - \sigma^2)},
+    \end{align*}
+    \begin{tikzpicture}[overlay,remember picture,>=stealth,nodes={align=left,inner ysep=1pt},<-]
+        \path (delta.south) ++ (0em,-3em) node[anchor=south east,color=red!67] (word){$
+            \int \frac{\dd\widehat{C}^{ab}}{\sqrt{2\pi}} \ee^{\ii \widehat{C}^{ab}(C^{ab} - {\overline{\vec{w}}^a}^\transpose \Lambda \overline{\vec{w}^b} - \sigma^2)}
+        $};
+        \draw [color=red!57](delta.south) |- ([xshift=-0.3ex,color=red]word.south west);
+    \end{tikzpicture}
+
+    with $\mathscr{D}[C] = \prod_{a \ge b} \dd C^{ab}$ and $\mathscr{D}[\widehat{C}] = \prod_{a \ge b} \dd \widehat{C}^{ab}$.
+\end{frame}
+
+\begin{frame}{Replica Trick (3)}
+    \begin{align*}
+        \mathbb{E}_\mathcal{D}[Z^n] &= \int \frac{\mathscr{D}[C] \,\mathscr{D}[\widehat{C}] \,{\color{red}\mathscr{D}[\overline{\vec{w}}]}}{(2\pi)^{\frac{n(n+1)}{2}}} \, \ee^{-\beta \sum_{a} \left(\lambda \norm{\vec{w}_\star - {\color{red} \overline{\vec{w}}^a}}^2 - {\color{red} t {\overline{\vec{w}}^a}^\transpose \Lambda \overline{\vec{w}}^a}\right)} \\
+        &\hspace{1cm} \cdot \ee^{{\color{teal}-\frac{p}{2} \log \det(\id + 2\beta C)} + \ii \sum_{a \ge b} \widehat{C}^{ab} (C^{ab} - {\color{red} {\overline{\vec{w}}^a}^\transpose \Lambda \overline{\vec{w}}^b} - \sigma^2)} \\
+        &= \ee^{-\frac{n(n+1)}{2}\log(2\pi) - \beta \lambda n \vec{w}_\star^\transpose \vec{w}_\star} \\
+        &\hspace{1cm} \times \int \mathscr{D}[C] \,\mathscr{D}[\widehat{C}] \, \eqhl{teal}{\ee^{-pG_E}}\, \eqhl{red}{\ee^{-G_S}}\, \ee^{\ii\sum_{a \ge b} \widehat{C}^{ab} (C^{ab} - \sigma^2)}
+    \end{align*}
+
+    Note that $\ee^{-G_S}$ is a Gaussian integral in $\overline{\vec{w}}$:
+    \begin{equation*}
+        \ee^{-G_S} = \int \dd\overline{\vec{w}} \cdot \exp\left\{- \beta \overline{\vec{w}}^\transpose \tikzmarknode{X}{\eqhl{violet}{X}} \overline{\vec{w}} + \beta \tikzmarknode{xi}{\eqhl{blue}{\vec{\xi}}}^\transpose \tikzmarknode{w}{\eqhl{black}{\overline{\vec{w}}}}\right\}.
+    \end{equation*}
+    \begin{tikzpicture}[overlay,remember picture,>=stealth,nodes={align=left,inner ysep=1pt},<-]
+        % X
+        \path (X.south) ++ (0,-0.7em) node[anchor=north east,color=violet!67] (wordX){$X^{ab} = (\lambda \id -t\Lambda + \frac{\ii}{2\beta} \widehat{C}^{aa} \Lambda) \delta_{ab} + \frac{\ii}{2\beta} \widehat{C}^{ab} \Lambda$};
+        \draw [color=violet!57](X.south) |- ([xshift=-0.3ex,color=violet] wordX.south west);
+        % xi
+        \path (xi.south) ++ (0,-2.5em) node[anchor=north east,color=blue!67] (wordxi){$\xi^{a} = 2\lambda \vec{w}_\star$};
+        \draw [color=blue!57](xi.south) |- ([xshift=-0.3ex,color=blue] wordxi.south west);
+        % w
+        \path (w.south) ++ (7em,-0.5em) node[anchor=north east,color=black!67] (wordw){$[\overline{\vec{w}}^1; \ldots; \overline{\vec{w}}^n]$};
+        \draw [color=black!57](w.south) |- ([xshift=-0.3ex,color=black] wordw.south east);
+    \end{tikzpicture}
+
+    \vspace{1cm}
+\end{frame}
+
+\begin{frame}{Replica Trick (4)}
+    We thus have
+    \begin{equation*}
+        \ee^{-G_S} = \left(\det(\beta X/\pi)\right)^{-1/2} \ee^{\frac{1}{4\beta} \vec{\xi}^\transpose X^{-1} \vec{\xi}}.
+    \end{equation*}
+    
+    Combining all the above, we obtain the integral
+    \begin{align*}
+        \boxed{
+            \mathbb{E}_{\mathcal{D}} \left[Z^n\right] = \ee^{O(n)} \int \mathscr{D}[C] \,\mathscr{D}[\widehat{C}] \, \ee^{- n\beta \eqhl{teal}{S [C,\widehat{C}]}}
+        },
+    \end{align*}
+    \begin{align*}
+        S [C,\widehat{C}] &= \frac{p}{2n\beta} \log\det(\id + 2\beta C) + \frac{1}{2n\beta} \log\det X \\
+        &\hspace{1cm} + \frac{1}{4n\beta^2} \vec{\xi}^\transpose X^{-1} \vec{\xi} - \frac{\ii}{n\beta} \sum_{a \ge b} \widehat{C}^{ab} (C^{ab} - \sigma^2).
+    \end{align*}
+    This requires \hl{saddle-point method} to find the typical $C$ and $\widehat{C}$!
+\end{frame}
+
+\begin{frame}{Replica Trick (5)}
+    By the \hl{convexity} of the problem, we can assume the symmetric replica ansatz:
+    \begin{align*}
+        &C_0 = C^{aa}, &\widehat{C}_0 = \widehat{C}^{aa}, && C_1 = C^{a \neq b}, && \widehat{C}_1 = \widehat{C}^{a \neq b}.
+    \end{align*}
+    
+    Knowing that $n \rightarrow 0$ and $p \rightarrow \infty$,
+    
+    \resizebox{\textwidth}{!}{$
+    \begin{aligned}
+        S[C,\widehat{C}] &= \left[\frac{p}{2\beta} \left(\log\left(1 + 2\beta (C_0 - C_1)\right) + \frac{2 \beta C_1}{1 + 2 \beta (C_0 - C_1)}\right) \right.\\
+        &\hspace{1cm} + \frac{1}{2\beta} \left(\log\det\left(\lambda \id + \left(\frac{\ii}{\beta} \left(\widehat{C}_0 - \frac{1}{2} \widehat{C}_1\right) - t\right) \Lambda\right) + \trace{\frac{\ii}{2 \beta} \widehat{C}_1 \Lambda \left( \lambda \id + \left(\frac{\ii}{\beta} \left(\widehat{C}_0 - \frac{1}{2} \widehat{C}_1\right) - t\right) \Lambda\right)^{-1}}\right) \\
+        &\hspace{1cm} + \frac{1}{4\beta^2} \vec{w}_\star^\transpose \left( \lambda \id + \left(\frac{\ii}{\beta} \left(\widehat{C}_0 - \frac{1}{2} \widehat{C}_1\right) - t\right) \Lambda\right)^{-1} \vec{w}_\star \\
+        &\hspace{1cm} \left.- \frac{\ii}{\beta} \left(\widehat{C}_0 (C_0 - \sigma^2) - \frac{1}{2} \widehat{C}_1 (C_1 - \sigma^2)\right)\right] + O(n).
+    \end{aligned}
+    $}
+    
+    The saddle point $(C^*,\widehat{C}^*)$ then satisfies $$0 = \pdiff{S}{C_0} = \pdiff{S}{C_1} = \pdiff{S}{\widehat{C}_0} = \pdiff{S}{\widehat{C}_1}.$$
+\end{frame}
+
+\begin{frame}{Replica Trick (6)}
+    By defining
+    \begin{equation*}
+        \kappa(t) \defeq \lambda \left(1 + 2\beta (C_0^* - C_1^*)\right),
+    \end{equation*}
+    one obtains
+    \begin{align*}
+        \mathbb{E}_{\mathcal{D}}[Z^n] &\approx \ee^{O(n)} \ee^{-n\beta S[C^*,\widehat{C}^*]} \\
+        \Rightarrow \mathbb{E}_{\mathcal{D}}[\log Z] &= \lim_{n\rightarrow 0} \frac{1}{n}\left(O(n) - n \beta S[C^*,\widehat{C}^*]\right) \\
+        \Rightarrow \mathcal{E}_g &= \lim_{\beta \rightarrow \infty} \lim_{n \rightarrow 0} \left.\pdiff{}{t} S[C^*,\widehat{C}^*] \right|_{t=0} \\
+        &\stackrel{!}{=} \frac{\zeta}{1-\zeta} \left(\sigma^2 + \kappa^2 \sum_{\rho} \frac{\eta_\rho w_{\star,\rho}^2}{(p \eta_\rho + \kappa)^2}\right) + \kappa^2 \sum_{\rho} \frac{\eta_\rho w_{\star,\rho}^2}{(p \eta_\rho + \kappa)^2},
+    \end{align*}
+    where $\kappa \defeq \kappa(0)$ and $\kappa'(0) = \kappa^2\zeta/(1-\zeta)$. \footnote{I have checked till the last step.}
+\end{frame}
+
+\begin{frame}{Results -- Generalization Error}
+    \begin{equation}
+    \boxed{
+        \mathcal{E}_g = \tikzmarknode{var}{\eqhl{red}{\frac{\zeta}{1-\zeta} \left(\sigma^2 + \kappa^2 \sum_{\rho} \frac{\eta_\rho w_{\star,\rho}^2}{(p \eta_\rho + \kappa)^2}\right)}} + \tikzmarknode{bias}{\eqhl{teal}{\kappa^2 \sum_{\rho} \frac{\eta_\rho w_{\star,\rho}^2}{(p \eta_\rho + \kappa)^2}}}
+    },
+    \end{equation}
+    \begin{tikzpicture}[overlay,remember picture,>=stealth,nodes={align=left,inner ysep=1pt},<-]
+        % variance
+        \path (var.south) ++ (0,-0.5em) node[anchor=north east,color=red!67] (wordV){variance};
+        \draw [color=red!57](var.south) |- ([xshift=-0.3ex,color=red]wordV.south west);
+        % bias
+        \path (bias.south) ++ (0,-0.5em) node[anchor=north west,color=teal!67] (wordB){bias};
+        \draw [color=teal!57](bias.south) |- ([xshift=-0.3ex,color=teal]wordB.south east);
+    \end{tikzpicture}
+
+    \vspace{0.1cm}
+    
+    where\footnote{Note that if $f_\star \notin \mathcal{H}$, some additional terms need to be included: $\sigma^2\mapsto \sigma^2 + \norm{\vec{a}_\star}^2$ and $\mathcal{E}_g \mapsto \mathcal{E}_g + \norm{\vec{a}_\star}^2$, where $\vec{a}_\star$ is the out-of-RKHS part of $f_\star$. See the paper \cite{Canatar_2021} for the full picture.}
+    \begin{equation}
+        \kappa \defeq \kappa(0) = \lambda + \sum_{\rho} \frac{\kappa \eta_\rho}{p \eta_\rho + \kappa},\; \zeta = \sum_{\rho} \frac{p \eta_\rho^2}{(\kappa + p \eta_\rho)^2}.
+    \end{equation}
+
+    Note: The function $\kappa(t)$ actually has close relation with the spectrum of the empirical NTK.
+\end{frame}
+
+\begin{frame}{Example -- Double Descent (1)}
+    % \begin{flushright}
+    % \fbox{
+    %     \footnotesize
+    %     $
+    %         \kappa(\alpha) = \frac{1}{2} \left((1 + \lambda - \alpha) + \sqrt{(1 + \lambda - \alpha)^2 + 4\lambda \alpha}\right)
+    %     $, 
+    %     $
+    %         \mathcal{E}_g = \frac{\kappa^2(\alpha) + \sigma^2 \alpha}{\left(\kappa(\alpha) + \alpha\right)^2 - \alpha}
+    %     $
+    % }
+    % \end{flushright}
+    Consider a linear regression with $\psi_\rho:\mathbb{R}^{D}\rightarrow\mathbb{R}$, $\vec{x}\mapsto x_\rho$, $\eta_\rho = 1$, $D=400$, $p=100$, $\sigma=0.5$, and $\vec{w}_\star$, $\vec{x}$'s are all normally distributed. Setting $\eqhl{red}{\rho = 1,\ldots,n}$, we have:
+    \begin{align*}
+        &\kappa = {\color{red}\cancelto{0}{\color{black}\lambda}} + \sum_{\rho {\color{red}=1}}^{{\color{red}n}} \frac{\kappa {\color{red}\cancelto{1}{\eta_\rho}}}{p {\color{red}\cancelto{1}{\eta_\rho}} + \kappa} = \frac{n\kappa}{p+\kappa}, \\
+        &\kappa^2 - (n-p)\kappa = 0 \rightsquigarrow \kappa = \begin{cases}
+            n - p, &n \ge p; \\
+            0, &n<p.
+        \end{cases}
+    \end{align*}
+    Similarly,
+    \begin{equation*}
+        \zeta = \begin{cases}
+            p/n, &n \ge p; \\
+            n/p, &n < p.
+        \end{cases}
+    \end{equation*}
+\end{frame}
+
+\begin{frame}{Example -- Double Descent (2)}
+    Denote $\gamma = n/p = \text{parameter / data}$,
+    \begin{equation*}
+        \norm{\vec{w}_{\star,n}}^2 = \sum_{\rho = 1}^{n} w_{\star,\rho}^2 \text{ and } \norm{\vec{a}_{\star,n}}^2 = \sum_{\rho=n+1}^{\infty} w_{\star,\rho}^2.
+    \end{equation*}
+    This example has closed form solution for the generalization error:
+    \begin{align*}
+        \mathcal{E}_g &= \begin{dcases}
+            \frac{\gamma - 1}{\gamma} \norm{\vec{w}_{\star,n}}^2 + \frac{\sigma^2 + \norm{\vec{a}_{\star,n}}^2}{\gamma - 1} + \norm{\vec{a}_{\star,n}}^2, &\gamma \ge 1; \\
+            \frac{\gamma}{1-\gamma} \left(\sigma^2 + \norm{\vec{a}_{\star,n}}^2\right) + \norm{\vec{a}_{\star,n}}^2, &1 > \gamma \le 0.
+        \end{dcases}
+    \end{align*}
+    % One can thus see that the variable $n$ represents the \hl{dimension of the RKHS}.
+\end{frame}
+
+\begin{frame}{Example -- Double Descent (3)}
+    Run the code yourself! [\href{https://github.com/WenPerng/NTUEE_Projects/blob/main/Physical_Theory_of_Machine_Learning/DoubleDescent.m}{link}]
+    \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{figures/doubleDescent2.pdf}
+    \end{figure}
+\end{frame}
